@@ -15,6 +15,19 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/auth" element={<Auth />} />
+          <Route
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <></>
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/app" element={<Dashboard />} />
+            <Route path="/s/:serverId/c/:channelId" element={<ServerChannel />} />
+          </Route>
           <Route path="/" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
@@ -23,5 +36,6 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
+
 
 export default App;
