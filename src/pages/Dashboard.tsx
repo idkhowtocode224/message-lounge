@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +22,11 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
+    supabase.auth.getUser().then(({ data }) => {
+      const raw = data.user?.email ?? data.user?.id ?? null;
+      const name = raw && typeof raw === "string" && raw.endsWith("@users.example.com") ? raw.split("@")[0] : raw;
+      setEmail(name);
+    });
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setServers(JSON.parse(raw));

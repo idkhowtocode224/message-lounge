@@ -26,8 +26,8 @@ export default function ServerChannel() {
 useEffect(() => {
   supabase.auth.getUser().then(({ data }) => {
     const raw = data.user?.email ?? data.user?.id ?? "Anon";
-    const name = raw && raw.endsWith("@ml.local") ? raw.split("@")[0] : raw;
-    setUsername(name);
+    const name = raw && typeof raw === "string" && raw.endsWith("@users.example.com") ? raw.split("@")[0] : raw;
+    setUsername(name as string);
   });
 }, []);
 
