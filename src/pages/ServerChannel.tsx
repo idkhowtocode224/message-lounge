@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,12 +23,13 @@ export default function ServerChannel() {
   const chanRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      const name = data.user?.email ?? data.user?.id ?? "Anon";
-      setUsername(name);
-    });
-  }, []);
+useEffect(() => {
+  supabase.auth.getUser().then(({ data }) => {
+    const raw = data.user?.email ?? data.user?.id ?? "Anon";
+    const name = raw && raw.endsWith("@ml.local") ? raw.split("@")[0] : raw;
+    setUsername(name);
+  });
+}, []);
 
   const roomKey = useMemo(() => `room:${serverId}:${channelId}`,[serverId, channelId]);
 
@@ -86,7 +87,7 @@ export default function ServerChannel() {
     const msg: ChatMessage = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       userId: user?.id ?? "anon",
-      author: user?.email ?? "Anon",
+      author: username,
       content,
       ts: Date.now(),
     };
